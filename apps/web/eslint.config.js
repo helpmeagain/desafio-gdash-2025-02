@@ -1,4 +1,4 @@
-import { nextJsConfig } from "@repo/eslint-config/next-js";
+import { viteConfig } from "@repo/eslint-config/vite";
 
 /** @type {import("eslint").Linter.Config[]} */
-export default nextJsConfig;
+export default viteConfig;
