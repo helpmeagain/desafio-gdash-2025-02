@@ -1,0 +1,9 @@
+{
+  "name": "collector",
+  "private": true,
+  "scripts": {
+    "dev": "python src/collector/main.py",
+    "build": "echo 'Python não precisa compilar'",
+    "test": "poetry run pytest -q"
+  }
+}

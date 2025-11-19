@@ -1,0 +1,1 @@
+Para o pylance desbugar, é necessário colocar o interpertador como o env que o poetry criou
