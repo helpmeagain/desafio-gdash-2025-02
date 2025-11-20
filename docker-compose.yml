@@ -1,0 +1,90 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: dd_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: dd_rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    image: api:latest
+    container_name: api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      MONGO_URL: "mongodb://mongo:27017"
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+    depends_on:
+      - mongo
+      - rabbitmq
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    image: web:latest
+    container_name: web
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+  # worker:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/worker/Dockerfile
+  #   image: dd_worker:latest
+  #   container_name: dd_worker
+  #   restart: unless-stopped
+  #   environment:
+  #     RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+  #     API_BASE_URL: "http://api:3000"
+  #   depends_on:
+  #     - rabbitmq
+  #     - api
+
+  # collector:
+  #   build:
+  #     context: .
+  #     dockerfile: apps/collector/Dockerfile
+  #   image: dd_collector:latest
+  #   container_name: dd_collector
+  #   restart: unless-stopped
+  #   environment:
+  #     RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+  #   depends_on:
+  #     - rabbitmq
+  #     - api
+
+volumes:
+  mongo-data:

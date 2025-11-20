@@ -1,5 +1,5 @@
 {
-  "extends": "./tsconfig.base.json",
+  "extends": "./base.json",
   "compilerOptions": {
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
@@ -7,7 +7,6 @@
     "sourceMap": true,
     "removeComments": true,
     "strictNullChecks": true,
-    "incremental": true,
-    "outDir": "dist"
+    "incremental": true
   }
 }
