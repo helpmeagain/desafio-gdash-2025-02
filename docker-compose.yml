@@ -73,18 +73,16 @@ services:
   #     - rabbitmq
   #     - api
 
-  # collector:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/collector/Dockerfile
-  #   image: dd_collector:latest
-  #   container_name: dd_collector
-  #   restart: unless-stopped
-  #   environment:
-  #     RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-  #   depends_on:
-  #     - rabbitmq
-  #     - api
+  collector:
+    build:
+      context: .
+      dockerfile: apps/collector/Dockerfile
+    image: collector:latest
+    container_name: collector
+    restart: unless-stopped
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 
 volumes:
   mongo-data:
