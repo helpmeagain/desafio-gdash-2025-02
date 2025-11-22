@@ -10,7 +10,7 @@ import { globalIgnores } from "eslint/config";
  * @type {import("eslint").Linter.Config[]}
  */
 export const nestConfig = [
-  globalIgnores(["eslint.config.mjs"]), 
+  globalIgnores(["eslint.config.mjs"]),
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
