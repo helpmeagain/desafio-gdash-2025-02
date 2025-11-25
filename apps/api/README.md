@@ -2,9 +2,9 @@
 
 ## Acessar documentação
 
-## Rodar container individual
-
 http://localhost:3000/api
+
+## Rodar container individual
 
 Rode os comandos, é necessário estar na **raiz do projeto**:
 

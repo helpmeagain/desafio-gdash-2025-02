@@ -36,8 +36,11 @@ WORKDIR /app
 
 RUN addgroup --system --gid 1001 nestjs
 RUN adduser --system --uid 1001 nestjs
-USER nestjs
 
 COPY --from=installer /app .
+RUN mkdir -p logs
+RUN chown -R nestjs:nestjs /app
+
+USER nestjs
 
 CMD ["node", "apps/api/dist/main.js"]
