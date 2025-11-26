@@ -30,6 +30,31 @@ services:
       timeout: 5s
       retries: 5
 
+  ollama:
+    container_name: ollama
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    entrypoint: >
+      sh -c "
+      ollama serve &
+      sleep 5 &&
+      ollama pull llama3.1:8b &&
+      wait
+      "
+    # ===== DESCOMENTAR SE TIVER GPU DA NVIDIA =====
+    # runtime: nvidia
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - capabilities: [gpu]
+    # environment:
+    #   - OLLAMA_GPU_LAYER=1000
+
   api:
     build:
       context: .
@@ -95,3 +120,4 @@ services:
 
 volumes:
   mongo-data:
+  ollama_data:
