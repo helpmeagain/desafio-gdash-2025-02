@@ -5,7 +5,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 @Module({
   imports: [
     MongooseModule.forRoot(
-      process.env.MONGO_URL || "mongodb://localhost:27017",
+      process.env.MONGO_URL || "mongodb://localhost:27017/weather_data"
     ),
     WeatherModule,
   ],

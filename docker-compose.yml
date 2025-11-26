@@ -41,8 +41,14 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      MONGO_URL: "mongodb://mongo:27017"
+      MONGO_URL: "mongodb://mongo:27017/weather_data"
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     depends_on:
       - mongo
       - rabbitmq
@@ -59,19 +65,22 @@ services:
     depends_on:
       - api
 
-  # worker:
-  #   build:
-  #     context: .
-  #     dockerfile: apps/worker/Dockerfile
-  #   image: dd_worker:latest
-  #   container_name: dd_worker
-  #   restart: unless-stopped
-  #   environment:
-  #     RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-  #     API_BASE_URL: "http://api:3000"
-  #   depends_on:
-  #     - rabbitmq
-  #     - api
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    image: worker:latest
+    container_name: worker
+    restart: unless-stopped
+    environment:
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+      QUEUE_NAME: "weather_data"
+      API_URL: "http://api:3000/weather"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      api:
+        condition: service_healthy
 
   collector:
     build:
