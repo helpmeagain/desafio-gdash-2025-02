@@ -3,12 +3,12 @@ import {
   Get,
   Post,
   Body,
-  // Patch,
-  // Param,
-  // Delete,
+  Res,
+  StreamableFile,
 } from "@nestjs/common";
 import { WeatherService } from "./weather.service";
 import { CreateWeatherDto } from "./dto/create-weather.dto";
+import type { Response } from "express";
 
 @Controller("weather")
 export class WeatherController {
@@ -19,23 +19,45 @@ export class WeatherController {
     return this.weatherService.create(createWeatherDto);
   }
 
-  @Get()
+  @Get("/logs")
   findAll() {
     return this.weatherService.findAll();
   }
 
-  // @Get(":id")
-  // findOne(@Param("id") id: string) {
-  //   return this.weatherService.findOne(+id);
-  // }
+  @Get("/export.csv")
+  async exportCsv(
+    @Res({ passthrough: true }) res: Response
+  ): Promise<StreamableFile> {
+    const buffer = await this.weatherService.exportCsv();
 
-  // @Patch(":id")
-  // update(@Param("id") id: string, @Body() updateWeatherDto: UpdateWeatherDto) {
-  //   return this.weatherService.update(+id, updateWeatherDto);
-  // }
+    res.set({
+      "Content-Type": "text/csv; charset=utf-8",
+      // attachment + filename
+      "Content-Disposition": 'attachment; filename="weather.csv"',
+      "Content-Length": buffer.length,
+    });
 
-  // @Delete(":id")
-  // remove(@Param("id") id: string) {
-  //   return this.weatherService.remove(+id);
-  // }
+    return new StreamableFile(buffer);
+  }
+
+  @Get("/export.xlsx")
+  async exportXlsx(
+    @Res({ passthrough: true }) res: Response
+  ): Promise<StreamableFile> {
+    const buffer = await this.weatherService.exportXlsx();
+
+    res.set({
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": 'attachment; filename="weather.xlsx"',
+      "Content-Length": buffer.length,
+    });
+
+    return new StreamableFile(buffer);
+  }
+
+  @Get("/insights")
+  generateInsights() {
+    return 0;
+  }
 }
