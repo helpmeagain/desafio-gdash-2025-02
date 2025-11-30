@@ -56,7 +56,7 @@ export class WeatherController {
   }
 
   @Get("/insights")
-  generateInsights() {
-    return 0;
+  async generateInsights() {
+    return this.weatherService.generateInsights();
   }
 }

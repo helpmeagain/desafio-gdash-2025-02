@@ -1,16 +1,22 @@
 import { Injectable } from "@nestjs/common";
 import { CreateWeatherDto } from "./dto/create-weather.dto";
-// import { UpdateWeatherDto } from "./dto/update-weather.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Weather, WeatherDocument } from "./schemas/weather.schema";
+import { ConfigService } from "@nestjs/config";
 import { Model } from "mongoose";
 import * as ExcelJS from "exceljs";
 
 @Injectable()
 export class WeatherService {
+  private readonly ollamaUrl: string;
+  private readonly ollamaModel: string;
   constructor(
-    @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>
-  ) {}
+    @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>,
+    private readonly config: ConfigService
+  ) {
+    this.ollamaUrl = this.config.get<string>("OLLAMA_URL")!;
+    this.ollamaModel = this.config.get<string>("OLLAMA_MODEL")!;
+  }
 
   async create(createWeatherDto: CreateWeatherDto): Promise<Weather> {
     const createdWeather = new this.weatherModel(createWeatherDto);
@@ -113,5 +119,114 @@ export class WeatherService {
     sheet.getRow(1).font = { bold: true };
     const buffer = await workbook.xlsx.writeBuffer();
     return Buffer.from(buffer);
+  }
+
+  async generateInsights() {
+    try {
+      const start = new Date();
+      start.setHours(0, 0, 0, 0);
+
+      const end = new Date();
+
+      let todayData = [];
+      try {
+        todayData = await this.weatherModel.find({
+          createdAt: { $gte: start, $lte: end },
+        });
+      } catch (dbErr) {
+        return { error: "Erro ao acessar os dados do clima." };
+      }
+
+      if (!todayData || todayData.length === 0) {
+        return { insight: "Nenhum dado registrado hoje." };
+      }
+      const avgTempRaw =
+        todayData.reduce((sum, w) => sum + (w.weather?.temperature_c ?? 0), 0) /
+        todayData.length;
+
+      const avgTemp = Number.isFinite(avgTempRaw) ? avgTempRaw : 0;
+
+      const prompt = `
+        Você é um analista climático. Gere um INSIGHT ESTRUTURADO baseado exclusivamente nos dados abaixo.
+
+        DADOS DO DIA:
+        - Registros coletados: ${todayData.length}
+        - Temperatura média (°C): ${avgTemp.toFixed(1)}
+
+        A resposta deve ser **exclusivamente** um JSON válido, seguindo exatamente o formato abaixo:
+
+        {
+          "resumo": "Resumo curto e direto sobre as condições gerais do dia.",
+          "datalhes": "Seja mais verboso e mais detalhado sobre o dia, de forma amigável mas não informal sobre as condições atuais. Use em torno de três linhas",
+          "avaliacao": "Avaliação objetiva sobre se o dia está quente, frio, úmido, seco, instável, etc.",
+          "alertas": [
+            "Lista de possíveis alertas relevantes. Se não houver alertas, devolva uma lista vazia."
+          ],
+          "tendencias": "Breve frase sobre possíveis tendências observadas nos dados.",
+          "confianca": "Porcentagem de confiança na análise (ex: '82%')."
+        }
+
+        Não inclua comentários, explicações, markdown ou qualquer texto fora do JSON.
+        `;
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 120_000);
+
+      let ollamaJson: any;
+
+      try {
+        const response = await fetch(this.ollamaUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: this.ollamaModel,
+            prompt,
+            stream: false,
+          }),
+          signal: controller.signal,
+        });
+
+        clearTimeout(timeout);
+
+        if (!response.ok) {
+          return {
+            error:
+              "Falha ao gerar insight (Ollama não respondeu adequadamente).",
+          };
+        }
+
+        ollamaJson = await response.json();
+      } catch (err: any) {
+        clearTimeout(timeout);
+        if (err.name === "AbortError") {
+          return { error: "Ollama demorou demais para responder (timeout)." };
+        }
+        return { error: "Erro de comunicação com o servidor de IA." };
+      }
+      const raw = ollamaJson?.response;
+      if (!raw) {
+        return { error: "Resposta vazia do modelo." };
+      }
+
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (err) {
+        return {
+          error: "O modelo retornou um JSON inválido.",
+          rawResponse: raw,
+        };
+      }
+
+      return {
+        insight: parsed,
+        metadata: {
+          registros: todayData.length,
+          temperatura_media: avgTemp.toFixed(1),
+        },
+      };
+    } catch (unexpected) {
+      return { error: "Erro inesperado ao gerar insights." };
+    }
   }
 }
