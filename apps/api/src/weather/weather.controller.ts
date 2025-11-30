@@ -32,7 +32,6 @@ export class WeatherController {
 
     res.set({
       "Content-Type": "text/csv; charset=utf-8",
-      // attachment + filename
       "Content-Disposition": 'attachment; filename="weather.csv"',
       "Content-Length": buffer.length,
     });

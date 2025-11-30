@@ -17,7 +17,7 @@ async function bootstrap() {
             nestWinstonUtilities.format.nestLike("WeatherApp", {
               colors: true,
               prettyPrint: true,
-            }),
+            })
           ),
         }),
 
@@ -33,12 +33,13 @@ async function bootstrap() {
     }),
   });
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
   const config = new DocumentBuilder()
     .setTitle("Weather API")
     .setDescription("API para consumo de informações sobre o clima")
     .setVersion("1.0")
+    .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup("api", app, documentFactory);
