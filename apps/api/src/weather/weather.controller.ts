@@ -11,29 +11,38 @@ import { WeatherService } from "./weather.service";
 import { CreateWeatherDto } from "./dto/create-weather.dto";
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/auth.guard";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
 
 @Controller("weather")
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Post("/logs")
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Inserir logs no banco",
+  })
   create(@Body() createWeatherDto: CreateWeatherDto) {
     return this.weatherService.create(createWeatherDto);
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Get("/logs")
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Capturar todos os logs do banco",
+  })
   findAll() {
     return this.weatherService.findAll();
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Get("/export.csv")
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Exportar dados como .CSV",
+  })
   async exportCsv(
     @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
@@ -49,8 +58,12 @@ export class WeatherController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Get("/export.xlsx")
+  @ApiBearerAuth()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Exportar dados como .XLSX",
+  })
   async exportXlsx(
     @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
@@ -67,8 +80,12 @@ export class WeatherController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
   @Get("/insights")
+  @ApiBearerAuth()
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: "Gerar insights com inteligência artificial",
+  })
   async generateInsights() {
     return this.weatherService.generateInsights();
   }
