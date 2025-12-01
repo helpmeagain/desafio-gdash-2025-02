@@ -73,6 +73,7 @@ services:
       OLLAMA_MODEL: "llama3.1:8b"
       ADMIN_EMAIL: "admin@email.com"
       ADMIN_PASSWORD: "admin123"
+      SWAPI_URL: "https://swapi.dev/api/"
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/api"]
       interval: 10s
