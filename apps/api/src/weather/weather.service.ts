@@ -5,6 +5,10 @@ import { Weather, WeatherDocument } from "./schemas/weather.schema";
 import { ConfigService } from "@nestjs/config";
 import { Model } from "mongoose";
 import * as ExcelJS from "exceljs";
+import {
+  WeatherInsight,
+  WeatherInsightDocument,
+} from "./schemas/insight.schema";
 
 @Injectable()
 export class WeatherService {
@@ -12,6 +16,8 @@ export class WeatherService {
   private readonly ollamaModel: string;
   constructor(
     @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>,
+    @InjectModel(WeatherInsight.name)
+    private insightModel: Model<WeatherInsightDocument>,
     private readonly config: ConfigService
   ) {
     this.ollamaUrl = this.config.get<string>("OLLAMA_URL")!;
@@ -132,31 +138,43 @@ export class WeatherService {
   async generateInsights(date?: string) {
     try {
       const { start, end } = this.parseDateRange(date);
+      const formattedDate = start.toISOString().slice(0, 10);
 
-      let dayData = [];
-      try {
-        dayData = await this.weatherModel.find({
-          createdAt: { $gte: start, $lte: end },
-        });
-      } catch (dbErr) {
-        return { error: "Erro ao acessar os dados do clima." };
-      }
+      const dayData = await this.weatherModel.find({
+        createdAt: { $gte: start, $lte: end },
+      });
 
       if (!dayData || dayData.length === 0) {
         return { insight: "Nenhum dado registrado na data informada." };
       }
-      const avgTempRaw =
-        dayData.reduce((sum, w) => sum + (w.weather?.temperature_c ?? 0), 0) /
-        dayData.length;
 
-      const avgTemp = Number.isFinite(avgTempRaw) ? avgTempRaw : 0;
+      const recordCount = dayData.length;
+
+      const existing = await this.insightModel.findOne({
+        date: formattedDate,
+      });
+
+      if (existing && existing.recordCount === recordCount) {
+        return {
+          insight: existing.insight,
+          metadata: {
+            registros: existing.recordCount,
+            date: formattedDate,
+            cached: true,
+          },
+        };
+      }
+
+      const avgTemp =
+        dayData.reduce((sum, w) => sum + (w.weather?.temperature_c ?? 0), 0) /
+        recordCount;
 
       const prompt = `
         Você é um analista climático. Gere um INSIGHT ESTRUTURADO baseado exclusivamente nos dados abaixo.
 
-        DATA: ${start.toISOString().slice(0, 10)}
+        DATA: ${formattedDate}
         DADOS DO DIA:
-        - Registros coletados: ${dayData.length}
+        - Registros coletados: ${recordCount}
         - Temperatura média (°C): ${avgTemp.toFixed(1)}
 
         A resposta deve ser **exclusivamente** um JSON válido, seguindo exatamente o formato abaixo:
@@ -178,7 +196,7 @@ export class WeatherService {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 120_000);
 
-      let ollamaJson: any;
+      let ollamaJson;
 
       try {
         const response = await fetch(this.ollamaUrl, {
@@ -195,44 +213,48 @@ export class WeatherService {
         clearTimeout(timeout);
 
         if (!response.ok) {
-          return {
-            error:
-              "Falha ao gerar insight (Ollama não respondeu adequadamente).",
-          };
+          return { error: "Falha ao gerar insight." };
         }
 
         ollamaJson = await response.json();
       } catch (err: any) {
         clearTimeout(timeout);
-        if (err.name === "AbortError") {
-          return { error: "Ollama demorou demais para responder (timeout)." };
-        }
-        return { error: "Erro de comunicação com o servidor de IA." };
-      }
-      const raw = ollamaJson?.response;
-      if (!raw) {
-        return { error: "Resposta vazia do modelo." };
+        return { error: "Erro ao comunicar com IA." };
       }
 
-      let parsed;
+      const raw = ollamaJson?.response;
+      if (!raw) return { error: "Resposta vazia da IA." };
+
+      let parsedInsight;
       try {
-        parsed = JSON.parse(raw);
-      } catch (err) {
+        parsedInsight = JSON.parse(raw);
+      } catch {
         return {
-          error: "O modelo retornou um JSON inválido.",
+          error: "JSON retornado pela IA é inválido.",
           rawResponse: raw,
         };
       }
 
+      await this.insightModel.findOneAndUpdate(
+        { date: formattedDate },
+        {
+          date: formattedDate,
+          recordCount,
+          insight: parsedInsight,
+        },
+        { upsert: true, new: true }
+      );
+
       return {
-        insight: parsed,
+        insight: parsedInsight,
         metadata: {
-          registros: dayData.length,
+          registros: recordCount,
           temperatura_media: avgTemp.toFixed(1),
-          date: start.toISOString().slice(0, 10),
+          date: formattedDate,
+          cached: false,
         },
       };
-    } catch (unexpected) {
+    } catch (err) {
       return { error: "Erro inesperado ao gerar insights." };
     }
   }
