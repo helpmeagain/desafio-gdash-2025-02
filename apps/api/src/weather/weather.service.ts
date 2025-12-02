@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { CreateWeatherDto } from "./dto/create-weather.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Weather, WeatherDocument } from "./schemas/weather.schema";
@@ -27,8 +27,16 @@ export class WeatherService {
     return this.weatherModel.find().sort({ createdAt: -1 }).exec();
   }
 
-  async exportCsv(): Promise<Buffer> {
-    const data = await this.findAll();
+  async findByDate(date?: string): Promise<Weather[]> {
+    const { start, end } = this.parseDateRange(date);
+    return this.weatherModel
+      .find({ createdAt: { $gte: start, $lte: end } })
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  async exportCsv(date?: string): Promise<Buffer> {
+    const data = await this.findByDate(date);
 
     const headers = [
       "_id",
@@ -79,8 +87,8 @@ export class WeatherService {
     return Buffer.from(csv, "utf8");
   }
 
-  async exportXlsx(): Promise<Buffer> {
-    const data = await this.findAll();
+  async exportXlsx(date?: string): Promise<Buffer> {
+    const data = await this.findByDate(date);
 
     const workbook = new ExcelJS.Workbook();
     const sheet = workbook.addWorksheet("Weather");
@@ -121,36 +129,34 @@ export class WeatherService {
     return Buffer.from(buffer);
   }
 
-  async generateInsights() {
+  async generateInsights(date?: string) {
     try {
-      const start = new Date();
-      start.setHours(0, 0, 0, 0);
+      const { start, end } = this.parseDateRange(date);
 
-      const end = new Date();
-
-      let todayData = [];
+      let dayData = [];
       try {
-        todayData = await this.weatherModel.find({
+        dayData = await this.weatherModel.find({
           createdAt: { $gte: start, $lte: end },
         });
       } catch (dbErr) {
         return { error: "Erro ao acessar os dados do clima." };
       }
 
-      if (!todayData || todayData.length === 0) {
-        return { insight: "Nenhum dado registrado hoje." };
+      if (!dayData || dayData.length === 0) {
+        return { insight: "Nenhum dado registrado na data informada." };
       }
       const avgTempRaw =
-        todayData.reduce((sum, w) => sum + (w.weather?.temperature_c ?? 0), 0) /
-        todayData.length;
+        dayData.reduce((sum, w) => sum + (w.weather?.temperature_c ?? 0), 0) /
+        dayData.length;
 
       const avgTemp = Number.isFinite(avgTempRaw) ? avgTempRaw : 0;
 
       const prompt = `
         Você é um analista climático. Gere um INSIGHT ESTRUTURADO baseado exclusivamente nos dados abaixo.
 
+        DATA: ${start.toISOString().slice(0, 10)}
         DADOS DO DIA:
-        - Registros coletados: ${todayData.length}
+        - Registros coletados: ${dayData.length}
         - Temperatura média (°C): ${avgTemp.toFixed(1)}
 
         A resposta deve ser **exclusivamente** um JSON válido, seguindo exatamente o formato abaixo:
@@ -221,12 +227,52 @@ export class WeatherService {
       return {
         insight: parsed,
         metadata: {
-          registros: todayData.length,
+          registros: dayData.length,
           temperatura_media: avgTemp.toFixed(1),
+          date: start.toISOString().slice(0, 10),
         },
       };
     } catch (unexpected) {
       return { error: "Erro inesperado ao gerar insights." };
     }
+  }
+
+  private parseDateRange(date?: string): { start: Date; end: Date } {
+    const isValidFormat = (d: string) => /^\d{4}-\d{2}-\d{2}$/.test(d);
+    let year: number, month: number, day: number;
+    if (!date) {
+      const now = new Date();
+      year = now.getFullYear();
+      month = now.getMonth() + 1;
+      day = now.getDate();
+    } else {
+      if (!isValidFormat(date)) {
+        throw new BadRequestException(
+          "Parâmetro 'date' inválido. Use YYYY-MM-DD."
+        );
+      }
+      const parts = date.split("-");
+      year = Number(parts[0]);
+      month = Number(parts[1]);
+      day = Number(parts[2]);
+      if (
+        Number.isNaN(year) ||
+        Number.isNaN(month) ||
+        Number.isNaN(day) ||
+        month < 1 ||
+        month > 12 ||
+        day < 1 ||
+        day > 31
+      ) {
+        throw new BadRequestException(
+          "Parâmetro 'date' inválido. Use YYYY-MM-DD."
+        );
+      }
+    }
+
+    const start = new Date(year, month - 1, day, 0, 0, 0, 0);
+    const end = new Date(year, month - 1, day, 23, 59, 59, 999);
+
+    return { start, end };
   }
 }
