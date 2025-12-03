@@ -1,27 +1,24 @@
-import { useState } from "react";
-import "./App.css";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { LoginForm } from "./components/login";
+import { SignupForm } from "./components/signup-form";
+import ClimaPage from "./pages/clima";
+import UsersPage from "./pages/users";
+import ShipsPage from "./pages/ships";
+import { DashboardLayout } from "./layouts/dashboard-layout";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      {/* TESTANDO TAILWIND */}
-      <h1 className="text-3xl font-bold underline text-emerald-500">
-        Vite + React
-      </h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginForm />} />
+        <Route path="/register" element={<SignupForm />} />
+        <Route element={<DashboardLayout />}>
+          <Route path="/clima" element={<ClimaPage />} />
+          <Route path="/users" element={<UsersPage />} />
+          <Route path="/ships" element={<ShipsPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
