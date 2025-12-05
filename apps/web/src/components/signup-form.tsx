@@ -1,7 +1,6 @@
 import * as React from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,9 +16,16 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-
 import { signup, refresh } from "@/lib/auth/authApi";
 import { getCurrentUser } from "@/lib/auth/authStorage";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const navigate = useNavigate();
@@ -27,6 +33,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [showSuccessDialog, setShowSuccessDialog] = React.useState(false);
   const [confirmPassword, setConfirmPassword] = React.useState("");
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const [checkingSession, setCheckingSession] = React.useState(true);
@@ -85,7 +92,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
     try {
       await signup({ name, email, password });
-      navigate("/", { replace: true });
+      setShowSuccessDialog(true);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const status = err.response?.status;
@@ -209,6 +216,36 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
             </form>
           </CardContent>
         </Card>
+        <Dialog
+          open={showSuccessDialog}
+          onOpenChange={(open) => {
+            setShowSuccessDialog(open);
+            if (!open) {
+              navigate("/", { replace: true });
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Conta criada com sucesso</DialogTitle>
+              <DialogDescription>
+                Seu cadastro foi realizado com sucesso. Agora você já pode
+                acessar o sistema.
+              </DialogDescription>
+            </DialogHeader>
+
+            <DialogFooter>
+              <Button
+                onClick={() => {
+                  setShowSuccessDialog(false);
+                  navigate("/", { replace: true });
+                }}
+              >
+                Ir para o login
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
