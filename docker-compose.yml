@@ -92,6 +92,8 @@ services:
     image: web:latest
     container_name: web
     restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://api:3000
     ports:
       - "8080:80"
     depends_on:

@@ -5,6 +5,7 @@ import ClimaPage from "./pages/clima";
 import UsersPage from "./pages/users";
 import ShipsPage from "./pages/ships";
 import { DashboardLayout } from "./layouts/dashboard-layout";
+import { ProtectedLayout } from "./layouts/protected-layout";
 
 function App() {
   return (
@@ -12,10 +13,12 @@ function App() {
       <Routes>
         <Route path="/" element={<LoginForm />} />
         <Route path="/register" element={<SignupForm />} />
-        <Route element={<DashboardLayout />}>
-          <Route path="/clima" element={<ClimaPage />} />
-          <Route path="/users" element={<UsersPage />} />
-          <Route path="/ships" element={<ShipsPage />} />
+        <Route element={<ProtectedLayout />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/clima" element={<ClimaPage />} />
+            <Route path="/users" element={<UsersPage />} />
+            <Route path="/ships" element={<ShipsPage />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

@@ -31,6 +31,13 @@ export class UserService {
     return await this.userModel.findOne({ _id: id }).exec();
   }
 
+  async findOneByIdWithRefreshHash(id: string): Promise<User | null> {
+    return await this.userModel
+      .findOne({ _id: id })
+      .select("+refreshTokenHash")
+      .exec();
+  }
+
   async findAllPaginated(page = 1, limit = 10) {
     const skip = (page - 1) * limit;
 
@@ -77,5 +84,32 @@ export class UserService {
     }
 
     return { message: "Usuário removido com sucesso" };
+  }
+
+  async setRefreshTokenHash(
+    userId: string,
+    refreshTokenHash: string
+  ): Promise<void> {
+    const updated = await this.userModel
+      .findByIdAndUpdate(userId, { refreshTokenHash }, { new: true })
+      .exec();
+
+    if (!updated) {
+      throw new NotFoundException("Usuário não encontrado");
+    }
+  }
+
+  async removeRefreshTokenHash(userId: string): Promise<void> {
+    const updated = await this.userModel
+      .findByIdAndUpdate(
+        userId,
+        { $unset: { refreshTokenHash: 1 } },
+        { new: true }
+      )
+      .exec();
+
+    if (!updated) {
+      throw new NotFoundException("Usuário não encontrado");
+    }
   }
 }

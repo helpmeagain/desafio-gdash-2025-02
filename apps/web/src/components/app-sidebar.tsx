@@ -1,4 +1,7 @@
 import { CloudSun, Users, Rocket, LogOut, ChevronUp } from "lucide-react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { logout } from "@/lib/auth/authApi";
+import { getCurrentUser } from "@/lib/auth/authStorage";
 
 import {
   Sidebar,
@@ -13,14 +16,15 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Link, useLocation } from "react-router-dom";
 
 const items = [
   {
@@ -42,6 +46,17 @@ const items = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const user = getCurrentUser();
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } finally {
+      navigate("/");
+    }
+  }
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -88,20 +103,32 @@ export function AppSidebar() {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src="" alt="User" />
-                    <AvatarFallback className="rounded-lg">US</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {user?.name?.slice(0, 2).toUpperCase() ?? "US"}
+                    </AvatarFallback>
                   </Avatar>
+
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">Exemplo</span>
-                    <span className="truncate text-xs">exemplo@email.com</span>
+                    <span className="truncate font-semibold">
+                      {user?.name ?? "Usuário"}
+                    </span>
+                    <span className="truncate text-xs">
+                      {user?.email ?? "email@email.com"}
+                    </span>
                   </div>
+
                   <ChevronUp className="ml-auto size-4" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
+
               <DropdownMenuContent
                 side="top"
                 className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               >
-                <DropdownMenuItem className="text-red-500 cursor-pointer">
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="text-red-500 cursor-pointer focus:text-red-500"
+                >
                   <LogOut className="mr-2 size-4" />
                   <span>Sair da conta</span>
                 </DropdownMenuItem>
@@ -110,6 +137,7 @@ export function AppSidebar() {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail />
     </Sidebar>
   );

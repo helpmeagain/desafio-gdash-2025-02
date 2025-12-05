@@ -33,13 +33,11 @@ export function DashboardLayout() {
             </h1>
           </div>
 
-          {/* Parte DIREITA: Botão de Tema */}
           <div className="flex items-center">
             <ModeToggle />
           </div>
         </header>
 
-        {/* Área onde as páginas (Clima, Usuários, etc.) serão renderizadas */}
         <div className="flex flex-1 flex-col gap-4 p-4">
           <Outlet />
         </div>

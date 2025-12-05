@@ -5,6 +5,7 @@ import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { WinstonModule, utilities as nestWinstonUtilities } from "nest-winston";
 import { transports, format } from "winston";
 import "winston-daily-rotate-file";
+import cookieParser from "cookie-parser";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -35,6 +36,15 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
+  app.use(cookieParser());
+  app.enableCors({
+    origin: [
+      "http://localhost:8080",
+      "http://web:80",
+      "http://localhost:5173/",
+    ],
+    credentials: true,
+  });
   const config = new DocumentBuilder()
     .setTitle("Weather API")
     .setDescription("API para consumo de informações sobre o clima")
