@@ -9,7 +9,7 @@ export class AdminSeeder implements OnApplicationBootstrap {
 
   constructor(
     private readonly userService: UserService,
-    private readonly config: ConfigService
+    private readonly config: ConfigService,
   ) {
     this.email = this.config.get<string>("ADMIN_EMAIL")!;
     this.password = this.config.get<string>("ADMIN_PASSWORD")!;

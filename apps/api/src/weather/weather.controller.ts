@@ -67,7 +67,7 @@ export class WeatherController {
   })
   async exportCsv(
     @Query("date") date: string | undefined,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     const buffer = await this.weatherService.exportCsv(date);
 
@@ -93,7 +93,7 @@ export class WeatherController {
   })
   async exportXlsx(
     @Query("date") date: string | undefined,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ): Promise<StreamableFile> {
     const buffer = await this.weatherService.exportXlsx(date);
 

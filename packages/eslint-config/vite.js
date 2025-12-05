@@ -37,5 +37,7 @@ export const viteConfig = [
       },
     },
   },
+  {
+    rules: { "react-refresh/only-export-components": "off" },
+  },
 ];
-

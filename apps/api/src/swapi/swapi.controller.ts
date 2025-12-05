@@ -33,7 +33,7 @@ export class SwapiController {
   })
   @ApiBearerAuth()
   async getStarships(
-    @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number
+    @Query("page", new DefaultValuePipe(1), ParseIntPipe) page: number,
   ): Promise<PaginatedResponseDto<StarshipDto>> {
     return await this.swapiService.getStarships(page);
   }

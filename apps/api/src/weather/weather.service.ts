@@ -18,7 +18,7 @@ export class WeatherService {
     @InjectModel(Weather.name) private weatherModel: Model<WeatherDocument>,
     @InjectModel(WeatherInsight.name)
     private insightModel: Model<WeatherInsightDocument>,
-    private readonly config: ConfigService
+    private readonly config: ConfigService,
   ) {
     this.ollamaUrl = this.config.get<string>("OLLAMA_URL")!;
     this.ollamaModel = this.config.get<string>("OLLAMA_MODEL")!;
@@ -242,7 +242,7 @@ export class WeatherService {
           recordCount,
           insight: parsedInsight,
         },
-        { upsert: true, new: true }
+        { upsert: true, new: true },
       );
 
       return {
@@ -270,7 +270,7 @@ export class WeatherService {
     } else {
       if (!isValidFormat(date)) {
         throw new BadRequestException(
-          "Parâmetro 'date' inválido. Use YYYY-MM-DD."
+          "Parâmetro 'date' inválido. Use YYYY-MM-DD.",
         );
       }
       const parts = date.split("-");
@@ -287,7 +287,7 @@ export class WeatherService {
         day > 31
       ) {
         throw new BadRequestException(
-          "Parâmetro 'date' inválido. Use YYYY-MM-DD."
+          "Parâmetro 'date' inválido. Use YYYY-MM-DD.",
         );
       }
     }

@@ -4,7 +4,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
-import { SwapiModule } from './swapi/swapi.module';
+import { SwapiModule } from "./swapi/swapi.module";
 
 @Module({
   imports: [
@@ -13,7 +13,7 @@ import { SwapiModule } from './swapi/swapi.module';
       envFilePath: [`${__dirname}/../.env`],
     }),
     MongooseModule.forRoot(
-      process.env.MONGO_URL || "mongodb://localhost:27017/weather_data"
+      process.env.MONGO_URL || "mongodb://localhost:27017/weather_data",
     ),
     WeatherModule,
     UserModule,

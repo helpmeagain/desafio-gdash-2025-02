@@ -88,7 +88,7 @@ export class UserService {
 
   async setRefreshTokenHash(
     userId: string,
-    refreshTokenHash: string
+    refreshTokenHash: string,
   ): Promise<void> {
     const updated = await this.userModel
       .findByIdAndUpdate(userId, { refreshTokenHash }, { new: true })
@@ -104,7 +104,7 @@ export class UserService {
       .findByIdAndUpdate(
         userId,
         { $unset: { refreshTokenHash: 1 } },
-        { new: true }
+        { new: true },
       )
       .exec();
 

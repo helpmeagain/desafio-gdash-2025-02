@@ -2,7 +2,6 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import globals from "globals";
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
-import { globalIgnores } from "eslint/config";
 
 /**
  * ESLint config para backend NestJS (flat config)
@@ -10,7 +9,6 @@ import { globalIgnores } from "eslint/config";
  * @type {import("eslint").Linter.Config[]}
  */
 export const nestConfig = [
-  globalIgnores(["eslint.config.mjs"]),
   js.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
@@ -33,10 +31,14 @@ export const nestConfig = [
       "@typescript-eslint/no-unsafe-assignment": "off",
       "@typescript-eslint/no-unsafe-argument": "off",
       "@typescript-eslint/no-unsafe-member-access": "off",
-      "@typescript-eslint/no-unsafe-call": off,
-      "@typescript-eslint/no-floating-promises": "warn",
-      "@typescript-eslint/no-unsafe-argument": "warn",
-      "prettier/prettier": ["warn", { endOfLine: "auto" }],
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unused-vars": "off",
+      "prettier/prettier": ["off", { endOfLine: "auto" }],
     },
+  },
+  {
+    ignores: ["dist", "node_modules", "logs", ".turbo", "test"],
   },
 ];

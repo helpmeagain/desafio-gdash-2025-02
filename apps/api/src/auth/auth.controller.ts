@@ -85,7 +85,9 @@ export class AuthController {
         const decoded: any =
           await this.authService["jwtService"].verifyAsync(refreshToken);
         await this.authService.logout(decoded.sub);
-      } catch (e) {}
+      } catch {
+        //
+      }
     }
     res.clearCookie("refresh_token", { path: "/" });
     return { ok: true };

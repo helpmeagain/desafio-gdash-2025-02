@@ -34,7 +34,7 @@ async function bootstrap() {
             nestWinstonUtilities.format.nestLike("WeatherApp", {
               colors: true,
               prettyPrint: true,
-            })
+            }),
           ),
         }),
 
@@ -50,7 +50,7 @@ async function bootstrap() {
     }),
   });
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   );
   app.use(cookieParser());
   app.enableCors({

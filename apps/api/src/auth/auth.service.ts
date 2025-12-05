@@ -7,7 +7,7 @@ import { JwtService } from "@nestjs/jwt";
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -38,7 +38,7 @@ export class AuthService {
     const refreshHash = await bcrypt.hash(refresh_token, 10);
     await this.userService.setRefreshTokenHash(
       user._id.toString(),
-      refreshHash
+      refreshHash,
     );
 
     return {

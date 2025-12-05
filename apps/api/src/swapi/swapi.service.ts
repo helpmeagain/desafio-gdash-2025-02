@@ -29,14 +29,14 @@ export class SwapiService {
 
   constructor(
     private readonly httpService: HttpService,
-    private readonly config: ConfigService
+    private readonly config: ConfigService,
   ) {
     this.swapiUrl = this.config.get<string>("SWAPI_URL")!;
     this.itemsPerPage = 10;
   }
 
   async getStarships(
-    page: number = 1
+    page: number = 1,
   ): Promise<PaginatedResponseDto<StarshipDto>> {
     if (page < 1) {
       throw new BadRequestException("A página deve ser >= 1");
@@ -48,7 +48,7 @@ export class SwapiService {
 
     try {
       const response = await firstValueFrom(
-        this.httpService.get<SwapiResponse<any>>(url)
+        this.httpService.get<SwapiResponse<any>>(url),
       );
       data = response.data;
     } catch (err) {
@@ -57,25 +57,25 @@ export class SwapiService {
 
         if (status === 404) {
           throw new NotFoundException(
-            "Endpoint ou recurso não encontrado na SWAPI"
+            "Endpoint ou recurso não encontrado na SWAPI",
           );
         }
 
         if (status === 429) {
           throw new ServiceUnavailableException(
-            "SWAPI está limitando requisições (Rate Limit: 429)"
+            "SWAPI está limitando requisições (Rate Limit: 429)",
           );
         }
 
         if (status! >= 500) {
           throw new ServiceUnavailableException(
-            "Erro interno na SWAPI. Tente novamente mais tarde."
+            "Erro interno na SWAPI. Tente novamente mais tarde.",
           );
         }
       }
 
       throw new ServiceUnavailableException(
-        "Não foi possível completar a requisição para a SWAPI."
+        "Não foi possível completar a requisição para a SWAPI.",
       );
     }
 
