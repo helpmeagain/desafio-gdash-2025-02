@@ -11,7 +11,9 @@ import {
 import { AuthService } from "./auth.service";
 import { LoginDto } from "./dto/login.dto";
 import type { Response, Request } from "express";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiOperation } from "@nestjs/swagger";
+
+const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
 
 @Controller("auth")
 export class AuthController {
@@ -19,6 +21,9 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @Post("login")
+  @ApiOperation({
+    summary: "Fazer login usando email e senha",
+  })
   async signIn(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) res: Response
@@ -28,7 +33,6 @@ export class AuthController {
       loginDto.password
     );
 
-    const SEVEN_DAYS = 7 * 24 * 60 * 60 * 1000;
     res.cookie("refresh_token", refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -42,6 +46,9 @@ export class AuthController {
 
   @Post("refresh")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Refresh no token",
+  })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response
@@ -60,7 +67,7 @@ export class AuthController {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: SEVEN_DAYS,
     });
 
     return { access_token, user };
@@ -68,6 +75,9 @@ export class AuthController {
 
   @Post("logout")
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: "Sair da conta atual",
+  })
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const refreshToken = req.cookies["refresh_token"];
     if (refreshToken) {

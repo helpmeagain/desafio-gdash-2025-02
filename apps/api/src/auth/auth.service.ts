@@ -20,7 +20,7 @@ export class AuthService {
   }
 
   async generateAccessToken(payload: any) {
-    return this.jwtService.signAsync(payload, { expiresIn: "15m" });
+    return this.jwtService.signAsync(payload);
   }
 
   async generateRefreshToken(payload: any) {
@@ -52,7 +52,7 @@ export class AuthService {
     try {
       const decoded: any = await this.jwtService.verifyAsync(refreshToken);
       const userId = decoded.sub;
-      const user = await this.userService.findOneById(userId);
+      const user = await this.userService.findOneByIdWithRefreshHash(userId);
       if (!user || !user.refreshTokenHash) throw new UnauthorizedException();
 
       const matches = await bcrypt.compare(refreshToken, user.refreshTokenHash);
