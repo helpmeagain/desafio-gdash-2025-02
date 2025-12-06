@@ -1,6 +1,20 @@
 # Weather Dashboard
 
+![Typescript](https://img.shields.io/badge/Typescript-blue?style=for-the-badge&logo=Typescript&logoColor=white)
+![NestJS](https://img.shields.io/badge/NestJS-%23ff3232?style=for-the-badge&logo=NestJS&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-blue?style=for-the-badge&logo=docker&logoColor=white)
+![React](https://img.shields.io/badge/React-blue?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-purple?style=for-the-badge&logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2306B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-green?style=for-the-badge&logo=mongodb&logoColor=white)
+![RabbitMQ](https://img.shields.io/badge/RabbitMQ-orange?style=for-the-badge&logo=rabbitmq&logoColor=white)
+![Go](https://img.shields.io/badge/Go-%2300ADD8?style=for-the-badge&logo=go&logoColor=white)
+![Python](https://img.shields.io/badge/Python-yellow?style=for-the-badge&logo=python&logoColor=white)
+![Ollama](https://img.shields.io/badge/Ollama-black?style=for-the-badge&logo=ollama&logoColor=white)
+
 Dashboard com insights e dados climáticos acerca de determinada região, utilizando um monorepo com collector, worker, api e aplicação web.
+
+![image](./docs/screenshot.png)
 
 ## Arquitetura
 
@@ -66,7 +80,14 @@ cd <project-directory>
 docker compose up
 ```
 
-4. Acesse o dashboard em http://localhost:8080. Também é possível acessar a documentação através do http://localhost:3000/api e também acessar o RabbitMQ Management UI através do http://localhost:15672.
+4. Acesse o dashboard em http://localhost:8080. Também é possível acessar a documentação através do http://localhost:3000/api e também acessar o RabbitMQ Management UI através do http://localhost:15672. Quando a aplicação é iniciada, é rodado um seed para um usuário admin com as credenciais:
+
+```json
+{
+  "email": "admin@email.com",
+  "password": "admin123"
+}
+```
 
 ### (Opcional) Utilizar GPU para gerar insights
 
