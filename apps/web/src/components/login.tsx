@@ -161,7 +161,7 @@ export function LoginForm({
                   <Field>
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full cursor-pointer"
                       disabled={isSubmitting}
                     >
                       {isSubmitting ? "Entrando..." : "Login"}

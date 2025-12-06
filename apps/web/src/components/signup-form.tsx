@@ -200,7 +200,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full"
+                      className="w-full cursor-pointer"
                     >
                       {isSubmitting ? "Criando conta..." : "Criar conta"}
                     </Button>
@@ -236,6 +236,7 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
 
             <DialogFooter>
               <Button
+                className="cursor-pointer"
                 onClick={() => {
                   setShowSuccessDialog(false);
                   navigate("/", { replace: true });

@@ -360,7 +360,11 @@ export default function UsersPage() {
       <Card>
         <CardHeader className="flex items-center justify-between">
           <CardTitle>Usuários</CardTitle>
-          <Button size="sm" onClick={() => setIsCreateOpen(true)}>
+          <Button
+            size="sm"
+            className="cursor-pointer"
+            onClick={() => setIsCreateOpen(true)}
+          >
             <Plus className="mr-1 h-4 w-4" />
             Cadastro
           </Button>
@@ -435,6 +439,7 @@ export default function UsersPage() {
                           <Button
                             variant="outline"
                             size="sm"
+                            className="cursor-pointer"
                             onClick={() => handleEditUser(user)}
                           >
                             <SquarePen className="mr-1 h-4 w-4" />
@@ -443,6 +448,7 @@ export default function UsersPage() {
                           <Button
                             variant="destructive"
                             size="sm"
+                            className="cursor-pointer"
                             onClick={() => handleDeleteUser(user)}
                           >
                             <Trash className="mr-1 h-4 w-4" />
@@ -497,7 +503,6 @@ export default function UsersPage() {
         </CardContent>
       </Card>
 
-      {/* Dialog de edição */}
       <Dialog
         open={!!editingUser}
         onOpenChange={(open) => {
@@ -559,12 +564,17 @@ export default function UsersPage() {
               <Button
                 type="button"
                 variant="outline"
+                className="cursor-pointer"
                 onClick={() => setEditingUser(null)}
                 disabled={isSavingUser}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isSavingUser}>
+              <Button
+                type="submit"
+                disabled={isSavingUser}
+                className="cursor-pointer"
+              >
                 {isSavingUser ? "Salvando..." : "Salvar"}
               </Button>
             </DialogFooter>
@@ -572,7 +582,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Dialog de cadastro */}
       <Dialog
         open={isCreateOpen}
         onOpenChange={(open) => {
@@ -643,12 +652,17 @@ export default function UsersPage() {
               <Button
                 type="button"
                 variant="outline"
+                className="cursor-pointer"
                 onClick={() => setIsCreateOpen(false)}
                 disabled={isCreatingUser}
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={isCreatingUser}>
+              <Button
+                type="submit"
+                disabled={isCreatingUser}
+                className="cursor-pointer"
+              >
                 {isCreatingUser ? "Cadastrando..." : "Cadastrar"}
               </Button>
             </DialogFooter>
@@ -656,7 +670,6 @@ export default function UsersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Alert dialog de deleção */}
       <AlertDialog
         open={!!userToDelete}
         onOpenChange={(open) => {
@@ -677,12 +690,16 @@ export default function UsersPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={isDeletingUser}>
+            <AlertDialogCancel
+              disabled={isDeletingUser}
+              className="cursor-pointer"
+            >
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={confirmDeleteUser}
               disabled={isDeletingUser}
+              className="cursor-pointer"
             >
               {isDeletingUser ? "Removendo..." : "Remover"}
             </AlertDialogAction>

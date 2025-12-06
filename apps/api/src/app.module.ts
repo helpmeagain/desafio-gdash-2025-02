@@ -5,6 +5,7 @@ import { UserModule } from "./user/user.module";
 import { AuthModule } from "./auth/auth.module";
 import { ConfigModule } from "@nestjs/config";
 import { SwapiModule } from "./swapi/swapi.module";
+import { SourceModule } from './source/source.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SwapiModule } from "./swapi/swapi.module";
     UserModule,
     AuthModule,
     SwapiModule,
+    SourceModule,
   ],
   controllers: [],
   providers: [],

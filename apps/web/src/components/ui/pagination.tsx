@@ -58,6 +58,8 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
+        !isActive && "cursor-pointer",
+        isActive && "cursor-default",
         className
       )}
       {...props}
@@ -73,7 +75,7 @@ function PaginationPrevious({
     <PaginationLink
       aria-label="Ir para a página anterior"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pl-2.5", className)}
+      className={cn("gap-1 px-2.5 sm:pl-2.5 cursor-pointer", className)}
       {...props}
     >
       <ChevronLeftIcon />
@@ -90,7 +92,7 @@ function PaginationNext({
     <PaginationLink
       aria-label="Ir para a próxima página"
       size="default"
-      className={cn("gap-1 px-2.5 sm:pr-2.5", className)}
+      className={cn("gap-1 px-2.5 sm:pr-2.5 cursor-pointer", className)}
       {...props}
     >
       <span className="hidden sm:block">Próximo</span>

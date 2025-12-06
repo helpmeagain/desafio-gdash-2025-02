@@ -245,8 +245,9 @@ export default function ShipsPage() {
                           variant="outline"
                           size="sm"
                           onClick={() => setSelectedShip(ship)}
+                          className="cursor-pointer"
                         >
-                          <ExternalLink className="mr-1 h-4 w-4" />
+                          <ExternalLink className="mr-1 h-4 w-4 cursor-pointer" />
                           Saiba mais
                         </Button>
                       </TableCell>

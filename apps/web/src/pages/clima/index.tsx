@@ -392,11 +392,11 @@ export default function ClimaPage() {
                   size="sm"
                   onClick={() => handleExport("csv")}
                   disabled={!canExport || isExportingCsv}
-                  className="inline-flex items-center gap-1"
+                  className="inline-flex items-center gap-1 cursor-pointer"
                 >
                   {isExportingCsv ? (
                     <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <Loader2 className="h-3 w-3 animate-spin cursor-default" />
                       <span>CSV</span>
                     </>
                   ) : (
@@ -411,11 +411,11 @@ export default function ClimaPage() {
                   size="sm"
                   onClick={() => handleExport("xlsx")}
                   disabled={!canExport || isExportingXlsx}
-                  className="inline-flex items-center gap-1"
+                  className="inline-flex items-center gap-1 cursor-pointer"
                 >
                   {isExportingXlsx ? (
                     <>
-                      <Loader2 className="h-3 w-3 animate-spin" />
+                      <Loader2 className="h-3 w-3 animate-spin cursor-default" />
                       <span>XLSX</span>
                     </>
                   ) : (
@@ -696,7 +696,7 @@ export default function ClimaPage() {
               <Button
                 onClick={handleGenerateInsights}
                 disabled={!canGenerateInsights}
-                className="inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Gerar insights com IA</span>
               </Button>
@@ -802,7 +802,7 @@ export default function ClimaPage() {
                 size="sm"
                 onClick={handleGenerateInsights}
                 disabled={!canGenerateInsights}
-                className="inline-flex items-center gap-2"
+                className="inline-flex items-center gap-2 cursor-pointer"
               >
                 <span>Gerar novamente</span>
               </Button>

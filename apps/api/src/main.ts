@@ -34,7 +34,7 @@ async function bootstrap() {
             nestWinstonUtilities.format.nestLike("WeatherApp", {
               colors: true,
               prettyPrint: true,
-            }),
+            })
           ),
         }),
 
@@ -50,7 +50,7 @@ async function bootstrap() {
     }),
   });
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })
   );
   app.use(cookieParser());
   app.enableCors({
@@ -65,6 +65,14 @@ async function bootstrap() {
     .setTitle("Weather API")
     .setDescription("API para consumo de informações sobre o clima")
     .setVersion("1.0")
+    .setExternalDoc(
+      "Source code",
+      "https://github.com/helpmeagain/desafio-gdash-2025-02"
+    )
+    .setLicense(
+      "GNU Affero General Public License V3",
+      "https://www.gnu.org/licenses/agpl-3.0.html"
+    )
     .addBearerAuth()
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);

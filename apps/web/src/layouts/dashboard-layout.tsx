@@ -7,6 +7,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/mode-toggle";
+import { Github } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const titleMap: { [key: string]: string } = {
   "/clima": "Clima",
@@ -28,12 +30,26 @@ export function DashboardLayout() {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
 
-            <h1 className="text-lg font-semibold leading-none tracking-tight">
+            <h1 className="text-lg font-semibold leading-none tracking-tight select-none">
               {currentTitle}
             </h1>
           </div>
 
-          <div className="flex items-center">
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="cursor-pointer"
+              asChild
+            >
+              <a
+                href="https://github.com/helpmeagain/desafio-gdash-2025-02"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Github />
+              </a>
+            </Button>
             <ModeToggle />
           </div>
         </header>
