@@ -36,6 +36,7 @@ const items = [
     title: "Usuários",
     url: "/users",
     icon: Users,
+    requiresAdmin: true as const,
   },
   {
     title: "Naves",
@@ -57,6 +58,13 @@ export function AppSidebar() {
     }
   }
 
+  const visibleItems = items.filter((item) => {
+    if (item.requiresAdmin && user?.role !== "admin") {
+      return false;
+    }
+    return true;
+  });
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -73,7 +81,7 @@ export function AppSidebar() {
           <SidebarGroupLabel>Aplicações</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
+              {visibleItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild

@@ -7,7 +7,7 @@ import { JwtService } from "@nestjs/jwt";
 export class AuthService {
   constructor(
     private userService: UserService,
-    private jwtService: JwtService,
+    private jwtService: JwtService
   ) {}
 
   async validateUser(email: string, password: string) {
@@ -30,7 +30,12 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.validateUser(email, password);
 
-    const payload = { sub: user._id, email: user.email, name: user.name };
+    const payload = {
+      sub: user._id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
 
     const access_token = await this.generateAccessToken(payload);
     const refresh_token = await this.generateRefreshToken({ sub: user._id });
@@ -38,13 +43,18 @@ export class AuthService {
     const refreshHash = await bcrypt.hash(refresh_token, 10);
     await this.userService.setRefreshTokenHash(
       user._id.toString(),
-      refreshHash,
+      refreshHash
     );
 
     return {
       access_token,
       refresh_token,
-      user: { id: user._id, email: user.email, name: user.name },
+      user: {
+        id: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      },
     };
   }
 
@@ -58,7 +68,13 @@ export class AuthService {
       const matches = await bcrypt.compare(refreshToken, user.refreshTokenHash);
       if (!matches) throw new UnauthorizedException();
 
-      const payload = { sub: user._id, email: user.email, name: user.name };
+      const payload = {
+        sub: user._id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      };
+
       const newAccess = await this.generateAccessToken(payload);
       const newRefresh = await this.generateRefreshToken({ sub: user._id });
 
@@ -68,7 +84,12 @@ export class AuthService {
       return {
         access_token: newAccess,
         refresh_token: newRefresh,
-        user: { id: user._id, email: user.email, name: user.name },
+        user: {
+          id: user._id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        },
       };
     } catch (err) {
       throw new UnauthorizedException();

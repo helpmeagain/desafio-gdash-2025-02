@@ -14,12 +14,16 @@ import { CreateWeatherDto } from "./dto/create-weather.dto";
 import type { Response } from "express";
 import { JwtAuthGuard } from "../auth/auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiQuery } from "@nestjs/swagger";
+import { RolesGuard } from "../auth/ roles.guard";
+import { Roles } from "../auth/roles.decorator";
+import { Role } from "../user/schemas/user.schema";
 
 @Controller("weather")
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Post("/logs")
   @ApiBearerAuth()
   @ApiOperation({
@@ -67,7 +71,7 @@ export class WeatherController {
   })
   async exportCsv(
     @Query("date") date: string | undefined,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
     const buffer = await this.weatherService.exportCsv(date);
 
@@ -93,7 +97,7 @@ export class WeatherController {
   })
   async exportXlsx(
     @Query("date") date: string | undefined,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: Response
   ): Promise<StreamableFile> {
     const buffer = await this.weatherService.exportXlsx(date);
 

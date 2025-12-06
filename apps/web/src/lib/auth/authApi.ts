@@ -1,10 +1,13 @@
 import api from "../api";
 import { setAuth, clearAuth } from "./authStorage";
 
+export type Role = "user" | "admin";
+
 export interface User {
   id: string;
   email: string;
   name: string;
+  role: Role;
 }
 
 export interface SignupPayload {

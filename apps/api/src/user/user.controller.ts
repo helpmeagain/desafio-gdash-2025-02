@@ -14,6 +14,9 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { JwtAuthGuard } from "../auth/auth.guard";
 import { ApiBearerAuth, ApiOperation, ApiQuery } from "@nestjs/swagger";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { Roles } from "../auth/roles.decorator";
+import { Role } from "./schemas/user.schema";
+import { RolesGuard } from "../auth/ roles.guard";
 
 @Controller("user")
 export class UserController {
@@ -47,7 +50,8 @@ export class UserController {
     return this.userService.findOneById(id);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Get()
   @ApiBearerAuth()
   @ApiOperation({
@@ -67,7 +71,8 @@ export class UserController {
     return this.userService.findAllPaginated(+page, +limit);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Patch(":id")
   @ApiBearerAuth()
   @ApiOperation({
@@ -77,7 +82,8 @@ export class UserController {
     return this.userService.update(id, updateDto);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   @Delete(":id")
   @ApiBearerAuth()
   @ApiOperation({

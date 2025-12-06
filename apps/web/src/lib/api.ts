@@ -1,5 +1,6 @@
 import axios, { type AxiosError, type AxiosRequestConfig } from "axios";
 import { getAccessToken, setAuth, clearAuth } from "@/lib/auth/authStorage";
+import type { Role } from "@/lib/auth/authApi";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig<unknown> {
   _retry?: boolean;
@@ -9,6 +10,7 @@ interface AuthUser {
   id: string;
   email: string;
   name: string;
+  role: Role;
 }
 
 interface AuthRefreshResponse {

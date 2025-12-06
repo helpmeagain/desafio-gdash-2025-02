@@ -142,6 +142,8 @@ export default function UsersPage() {
 
           if (status === 401) {
             setError("Sessão expirada, faça login novamente");
+          } else if (status === 403) {
+            setError("Você não tem permissão para visualizar esta página");
           } else {
             setError("Erro ao carregar a lista de usuários");
           }

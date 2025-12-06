@@ -18,7 +18,12 @@ export function loadAuthFromStorage() {
   const userJson = localStorage.getItem(USER_KEY);
   if (token && userJson) {
     accessToken = token;
-    currentUser = JSON.parse(userJson);
+    try {
+      const parsed = JSON.parse(userJson) as User;
+      currentUser = parsed;
+    } catch {
+      currentUser = null;
+    }
   }
 }
 
