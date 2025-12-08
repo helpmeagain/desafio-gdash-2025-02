@@ -1,0 +1,14 @@
+node_modules
+**/node_modules
+.pnpm-store
+.vscode
+.git
+.gitignore
+dist
+bin
+*.log
+.env
+.env.local
+.DS_Store
+**/__pycache__
+**/*.pyc
